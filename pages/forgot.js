@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-const Login = () => {
+const forgot = () => {
   return (
     <div>
       <div className="text-center mt-24">
@@ -20,11 +20,11 @@ const Login = () => {
             />
           </svg>
         </div>
-        <h2 className="text-3xl tracking-tight">Sign in into your account</h2>
-        <span className="text-lg">
+        <h2 className="text-3xl tracking-tight">Forgot Password</h2>
+        <span className="text-sm">
           or{" "}
-          <Link href={"/signup"} className="text-blue-500 ">
-            register a new account
+          <Link href={"/login"} className="text-blue-500">
+            Login
           </Link>
         </span>
       </div>
@@ -34,62 +34,24 @@ const Login = () => {
             <div className="w-full md:w-full px-3 mb-6">
               <label
                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                htmlFor="email"
+                htmlFor="Password"
               >
                 Email address
               </label>
               <input
-                name="email"
-                id="email"
                 className="appearance-none block w-full bg-white text-gray-900 font-medium border border-gray-400 rounded-lg py-3 px-3 leading-tight focus:outline-none"
                 type="email"
-                placeholder="Enter your email address"
                 required
               />
-            </div>
-            <div className="w-full md:w-full px-3 mb-6">
-              <label
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                htmlFor="password"
-              >
-                Password
-              </label>
-              <input
-                name="password"
-                id="password"
-                className="appearance-none block w-full bg-white text-gray-900 font-medium border border-gray-400 rounded-lg py-3 px-3 leading-tight focus:outline-none"
-                type="password"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
-            <div className="w-full flex items-center justify-between px-3 mb-3 ">
-              <label htmlFor="remember" className="flex items-center w-1/2">
-                <input
-                  type="checkbox"
-                  name=""
-                  id=""
-                  className="mr-1 bg-white shadow"
-                />
-                <span className="text-sm text-gray-700 pt-1">Remember Me</span>
-              </label>
-              <div className="w-1/2 text-right">
-                <Link
-                  href={"/forgot"}
-                  className="text-blue-500 text-sm tracking-tight"
-                >
-                  Forget your password?
-                </Link>
-              </div>
-            </div>
+            </div>           
             <div className="w-full md:w-full px-3 mb-6">
               <button className="appearance-none block w-full bg-blue-600 text-gray-100 font-bold border border-gray-200 rounded-lg py-3 px-3 leading-tight hover:bg-blue-500 focus:outline-none focus:bg-white focus:border-gray-500">
-                Sign in
+               Continue
               </button>
             </div>
             <div className="mx-auto -mb-6 pb-1">
               <span className="text-center text-xs text-gray-700">
-                or sign in with
+                or sign up with
               </span>
             </div>
             <div className="flex items-center w-full mt-2">
@@ -131,4 +93,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default forgot;

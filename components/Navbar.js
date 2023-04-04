@@ -8,6 +8,7 @@ import {
   AiOutlineMinusCircle,
 } from "react-icons/ai";
 import { BsFillBagCheckFill } from "react-icons/bs";
+import { MdAccountCircle } from "react-icons/md";
 
 const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
   const toggleCart = () => {
@@ -43,17 +44,18 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
           </Link>
         </ul>
       </div>
-      <div
-        onClick={toggleCart}
-        className="cart absolute cursor-pointer right-0 top-4 mx-5"
-      >
-        <AiOutlineShoppingCart className="md:text-3xl" />
+      <div className="cart absolute right-0 top-4 mx-5  flex">
+        <Link href ={"/login"}><MdAccountCircle className="cursor-pointer md:text-3xl mx-2" /></Link>
+        <AiOutlineShoppingCart
+          onClick={toggleCart}
+          className="cursor-pointer md:text-3xl"
+        />
       </div>
 
       <div
         ref={ref}
         className="w-72 sideCart absolute top-0 right-0 transform transition-transform translate-x-full bg-pink-100 px-8 py-10"
-       >
+      >
         <h2 className="font-bold text-center text-xl">Shopping Cart</h2>
         <span
           onClick={toggleCart}
@@ -63,7 +65,8 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
         </span>
         <ol className="list-decimal font-semibold">
           {cart && Object.keys(cart).length === 0 && (
-            <div className="my-4 font-normal">Your cart is empty!!!</div>)}
+            <div className="my-4 font-normal">Your cart is empty!!!</div>
+          )}
 
           {Object.keys(cart).map((k) => {
             return (
@@ -104,7 +107,7 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
             );
           })}
         </ol>
-        <div className ="total font-bold mb-2">Total : ₹{subTotal}</div>
+        <div className="total font-bold mb-2">Total : ₹{subTotal}</div>
         <div className="flex">
           <Link href={"/checkout"}>
             <button className="flex mx-2  text-white bg-indigo-500 border-0 py-2 px-2 focus:outline-none hover:bg-indigo-600 rounded text-sm">
