@@ -1,10 +1,74 @@
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const router = useRouter();
+
+  const handleChange = (e) => {
+    if (e.target.name === "name") {
+      setName(e.target.value);
+    } else if (e.target.name === "email") {
+      setEmail(e.target.value);
+    } else if (e.target.name === "password") {
+      setPassword(e.target.value);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = { name, email, password };
+    let res = await fetch(`${process.env.NEXT_PUBLIC_PORT}/api/signup`, {
+      method: "POST",
+      headers: {
+        contentType: "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    let response = await res.json();
+    setName("");
+    setEmail("");
+    setPassword("");
+    toast.success("Signup Successfully!", {
+      position: "bottom-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  useEffect(()=>{
+    if(localStorage.getItem('token')){
+      router.push('/')
+    }
+  },[])
+
   return (
     <div>
       <div>
+        <ToastContainer
+          position="bottom-center"
+          autoClose={2500}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <div className="text-center mt-24">
           <div className="flex items-center justify-center">
             <svg
@@ -30,7 +94,10 @@ const Signup = () => {
           </span>
         </div>
         <div className="flex justify-center my-2 mx-4 md:mx-0">
-          <form className="w-full max-w-xl bg-white rounded-lg shadow-md p-6">
+          <form
+            onSubmit={handleSubmit}
+            className="w-full max-w-xl bg-white rounded-lg shadow-md p-6"
+          >
             <div className="flex flex-wrap -mx-3 mb-6">
               <div className="w-full md:w-full px-3 mb-6">
                 <label
@@ -40,6 +107,8 @@ const Signup = () => {
                   Name
                 </label>
                 <input
+                  value={name}
+                  onChange={handleChange}
                   name="name"
                   id="name"
                   className="appearance-none block w-full bg-white text-gray-900 font-medium border border-gray-400 rounded-lg py-3 px-3 leading-tight focus:outline-none"
@@ -56,6 +125,8 @@ const Signup = () => {
                   Email address
                 </label>
                 <input
+                  value={email}
+                  onChange={handleChange}
                   name="email"
                   id="email"
                   className="appearance-none block w-full bg-white text-gray-900 font-medium border border-gray-400 rounded-lg py-3 px-3 leading-tight focus:outline-none"
@@ -72,6 +143,8 @@ const Signup = () => {
                   Password
                 </label>
                 <input
+                  value={password}
+                  onChange={handleChange}
                   name="password"
                   id="password"
                   className="appearance-none block w-full bg-white text-gray-900 font-medium border border-gray-400 rounded-lg py-3 px-3 leading-tight focus:outline-none"

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -10,7 +10,18 @@ import {
 import { BsFillBagCheckFill } from "react-icons/bs";
 import { MdAccountCircle } from "react-icons/md";
 
-const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
+const Navbar = ({
+  logOut,
+  user,
+  cart,
+  addToCart,
+  removeFromCart,
+  clearCart,
+  subTotal,
+}) => {
+  const [dropdown, setDropdown] = useState(false);
+  const ref = useRef();
+
   const toggleCart = () => {
     if (ref.current.classList.contains("translate-x-full")) {
       ref.current.classList.remove("translate-x-full");
@@ -20,16 +31,17 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
       ref.current.classList.add("translate-x-full");
     }
   };
-  const ref = useRef();
+
+  
   return (
     <div className="flex flex-col md:flex-row md:justify-start justify-center items-center py-2 sticky top-0 bg-white">
-      <div className="logo mx-5">
+      <div className="logo  mx-5">
         <Link href={"/"}>
           <Image src="vercel.svg" alt="logo" width={100} height={30} />
         </Link>
       </div>
-      <div className="nav">
-        <ul className="flex items-center space-x-6 font-bold md:text-md">
+      <div className="nav mt-2 md:mt-0">
+        <ul className="flex items-center space-x-6 font-bold md:text-md ">
           <Link href={"/tshirts"}>
             <li>Tshirts</li>
           </Link>
@@ -44,17 +56,58 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
           </Link>
         </ul>
       </div>
-      <div className="cart absolute right-0 top-4 mx-5  flex">
-        <Link href ={"/login"}><MdAccountCircle className="cursor-pointer md:text-3xl mx-2" /></Link>
+      <div className="cart absolute items-center right-0 top-1 mx-5  flex">
+        <div  onMouseOver={() => {
+              setDropdown(true);
+            }}
+            onMouseLeave={() => {
+              setDropdown(false);
+            }}>
+        {dropdown && (
+          <div
+            onMouseOver={() => {
+              setDropdown(true);
+            }}
+            onMouseLeave={() => {
+              setDropdown(false);
+            }}
+            className="absolute right-10 top-7 bg-pink-300 rounded-md px-5 w-40"
+          >
+            <ul>
+              <Link href={'/myaccount'}><li className="py-1 text-md hover:text-white">My Account</li></Link>
+              <Link href={'orders'}><li className="py-1 text-md hover:text-white">My Orders</li></Link>
+              <li onClick={logOut} className="cursor-pointer py-1 text-md hover:text-white">Logout</li>
+            </ul>
+          </div>
+        )}
+        {user.value && (
+          <MdAccountCircle
+            onMouseOver={() => {
+              setDropdown(true);
+            }}
+            onMouseLeave={() => {
+              setDropdown(false);
+            }}
+            className="cursor-pointer text-2xl md:text-3xl mx-2"
+          />
+        )}
+        </div>
+        {!user.value && (
+          <Link href={"/login"}>
+            <button className="bg-indigo-500 px-2 py-1 rounded-md text-lg text-white mx-2 md:text-sm">
+              Login
+            </button>
+          </Link>
+        )}
         <AiOutlineShoppingCart
           onClick={toggleCart}
-          className="cursor-pointer md:text-3xl"
+          className="cursor-pointer text-2xl md:text-3xl"
         />
       </div>
 
       <div
         ref={ref}
-        className="w-72 sideCart absolute top-0 right-0 transform transition-transform translate-x-full bg-pink-100 px-8 py-10"
+        className="w-80 h-[100vh] sideCart absolute top-0 right-0 overflow-y-scroll transform transition-transform translate-x-full bg-pink-100 px-8 py-10"
       >
         <h2 className="font-bold text-center text-xl">Shopping Cart</h2>
         <span
@@ -72,7 +125,9 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
             return (
               <li key={k}>
                 <div className="item flex my-3 mb-16">
-                  <div className="w-2/3 font-semibold">{cart[k].name}</div>
+                  <div className="w-2/3 font-semibold">
+                    {cart[k].name} ({cart[k].size}/{cart[k].variant})
+                  </div>
                   <div className="flex items-center justify-center w-1/3 font-semibold">
                     <AiOutlineMinusCircle
                       onClick={() =>
