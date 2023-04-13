@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import mongoose from "mongoose";
 import Order from "../Models/Order";
+import Head from "next/head";
 
 const MyOrder = ({order}) => {
   const router = useRouter();
@@ -9,6 +10,9 @@ const MyOrder = ({order}) => {
   const products = order.products;
   return (
     <div>
+      <Head>
+        <title>Order-Codeswear</title>
+      </Head>
       <section className="text-gray-600 body-font overflow-hidden">
         <div className="container px-5 py-24 mx-auto">
           <div className="lg:w-4/5 mx-auto flex flex-wrap">
@@ -21,6 +25,9 @@ const MyOrder = ({order}) => {
               </h1>
               <p className="leading-relaxed mb-4">
                 Your Order has been successfully placed.Your payment status is : {order.status}
+              </p>
+              <p className="leading-relaxed mb-4">
+                Order placed on: {Date(order.createdAt)}
               </p>
               <div className="flex border-b-2 mb-4 text-center">
                 <a className="flex-grow py-2 text-lg px-1 ">
@@ -36,7 +43,7 @@ const MyOrder = ({order}) => {
 
              { Object.keys(products).map(key=>{
               return <div key = {key} className="flex border-t border-gray-200 py-2 text-center">
-                     <span className="text-gray-500 ml-5" style ={{'max-width':'10rem'}}>
+                     <span className="text-gray-500 ml-5" style ={{'maxWidth':'10rem'}}>
                      { products[key].name} ({products[key].size}/{products[key].variant})
                      </span>
                      <span className="mx-24  text-gray-900">{products[key].qty}</span>

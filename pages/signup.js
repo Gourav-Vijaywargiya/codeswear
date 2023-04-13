@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Head from "next/head";
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -56,6 +57,9 @@ const Signup = () => {
 
   return (
     <div>
+      <Head>
+        <title>Signup-Codeswear</title>
+      </Head>
       <div>
         <ToastContainer
           position="bottom-center"

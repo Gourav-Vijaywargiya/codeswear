@@ -2,12 +2,28 @@
 import Order from "../../Models/Order";
 import Product from "../../Models/Product";
 import connectDb from "../../middleware/mongoose";
+import pincodes from "../../pincodes.json"
 
 const handler = async (req, res) => {
     const body = JSON.parse(req.body);
     // const body = req.body;
   if (req.method === "POST") {
+    // Check if details are valid 
+    if(body.phone.length !== 10|| !Number.isInteger(Number(body.phone))){
+      return res.status(200).json({"success": false,"error":"Please enter 10 digit mobile number"});
+    }
+    if(body.pincode.length !== 6 || !Number.isInteger(Number(body.pincode))){
+      return res.status(200).json({"success": false,"error":"Please enter 6 digit pincode"});
+    }
 
+    // Check pincode is servicable or not
+    if(!Object.keys(pincodes).includes(body.pincode)){
+      return res.status(200).json({"success": false,"error":"This pincode is not servicable"})
+    }
+
+    if(body.subTotal<=0){
+      return res.status(200).json({"success": true,"error":"Your cart is empty please add some item to your cart"})
+    }
     // Check if the cart value is tampered
     let product,sumTotal=0
     for(let item in body.cart){
@@ -26,11 +42,18 @@ const handler = async (req, res) => {
       return res.status(200).json({"success": true,"error":"Price of some item has been changed in your cart"})
     }
 
+    
+    
    let order = new Order({
+    name: body.name,
     email:body.email,
     orderId:body.oid,
     address:body.address,
+    pincode:body.pincode,
+    state:body.state,
+    city:body.city,
     amount:body.subTotal,
+    phone:body.phone,
     products:body.cart
    });
    await order.save();

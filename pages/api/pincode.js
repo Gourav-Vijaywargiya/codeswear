@@ -1,9 +1,6 @@
+import pincodes from "../../pincodes.json"
 export default function handler(req, res) {
-  let pincodes = {
-    "721303":["Kahragpur","West Bengal"],
-    "110003":["Delhi","Delhi"],
-    "560017":["Banglore","Karnataka"]
-  }
+  // let pincodes = 
     res.status(200).json(pincodes)
   }
   

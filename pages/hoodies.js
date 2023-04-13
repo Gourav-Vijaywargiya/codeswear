@@ -2,10 +2,14 @@ import React from "react";
 import Link from "next/link";
 import mongoose from "mongoose";
 import Product from "../Models/Product";
+import Head from "next/head";
 
 const hoodies = ({products}) => {
   return (
     <div>
+       <Head>
+        <title>Hoddie-Codeswear</title>
+      </Head>
       <section className="text-gray-600 body-font">
         <div className="container px-5 py-24 mx-auto">
           <div className="flex flex-wrap -m-4 justify-center">

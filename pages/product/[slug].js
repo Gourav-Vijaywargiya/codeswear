@@ -1,15 +1,18 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import Error from 'next/error'
+import { useEffect, useState } from "react";
 import mongoose from "mongoose";
 import Product from "../../Models/Product";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Post = ({ buyNow, addToCart, product, variants }) => {
+const Post = ({ error,buyNow, addToCart, product, variants }) => {
   const router = useRouter();
   const { slug } = router.query;
   const [pin, setPin] = useState("");
   const [service, setService] = useState();
+  const [color, setColor] = useState();
+  const [size, setSize] = useState();
   const checkServiceabillity = async () => {
     let pins = await fetch(`${process.env.NEXT_PUBLIC_PORT}/api/pincode`);
     let pinJson = await pins.json();
@@ -43,13 +46,23 @@ const Post = ({ buyNow, addToCart, product, variants }) => {
   const onChangePin = (e) => {
     setPin(e.target.value);
   };
-  const [color, setColor] = useState(product.color);
-  const [size, setSize] = useState(product.size);
 
   const refreshvariant = (newColor, newSize) => {
-    let url = `${process.env.PORT}/product/${variants[newColor][newSize]["slug"]}`;
-    window.location = url;
+    let url = `${variants[newColor][newSize]["slug"]}`;
+    // window.location = url;
+    router.push(url)
   };
+
+  useEffect(()=>{
+    if(!error){
+      setColor(product.color);
+      setSize(product.size);
+    }
+  },[router.query])
+
+  if (error==404) {
+    return <Error statusCode={404} />
+  }
   return (
     <>
       <section className="text-gray-600 body-font overflow-hidden">
@@ -135,7 +148,7 @@ const Post = ({ buyNow, addToCart, product, variants }) => {
                     viewBox="0 0 24 24"
                   >
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                  </svg>
+                  </svg>title
                   <span className="text-gray-600 ml-3">4 Reviews</span>
                 </span>
                 <span className="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
@@ -260,19 +273,19 @@ const Post = ({ buyNow, addToCart, product, variants }) => {
                       }}
                       className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10"
                     >
-                      {Object.keys(variants[color]).includes("S") && (
+                      {color && Object.keys(variants[color]).includes("S") && (
                         <option value={"S"}>S</option>
                       )}
-                      {Object.keys(variants[color]).includes("M") && (
+                      {color && Object.keys(variants[color]).includes("M") && (
                         <option value={"M"}>M</option>
                       )}
-                      {Object.keys(variants[color]).includes("L") && (
+                      {color && Object.keys(variants[color]).includes("L") && (
                         <option value={"L"}>L</option>
                       )}
-                      {Object.keys(variants[color]).includes("XL") && (
+                      {color && Object.keys(variants[color]).includes("XL") && (
                         <option value={"XL"}>XL</option>
                       )}
-                      {Object.keys(variants[color]).includes("XXL") && (
+                      {color && Object.keys(variants[color]).includes("XXL") && (
                         <option value={"XXL"}>XXL</option>
                       )}
                     </select>
@@ -294,9 +307,10 @@ const Post = ({ buyNow, addToCart, product, variants }) => {
               </div>
               <div className="flex">
                 <span className="title-font font-medium text-2xl text-gray-900">
-                  ₹{product.price}
+                 {product.availableQty<=0 ? "Out of Stock" : `₹${product.price}`}
                 </span>
                 <button
+                  disabled ={product.availableQty<=0 ? true : false}
                   onClick={() => {
                     buyNow(
                       slug,
@@ -307,11 +321,12 @@ const Post = ({ buyNow, addToCart, product, variants }) => {
                       product.color
                     );
                   }}
-                  className="flex ml-5 text-white bg-pink-500 border-0 py-2 px-6 focus:outline-none hover:bg-pink-600 rounded"
+                  className="disabled:bg-pink-300 flex ml-5 text-white bg-pink-600 border-0 py-2 px-6 focus:outline-none hover:bg-pink-600 rounded"
                 >
                   Buy Now
                 </button>
                 <button
+                  disabled ={product.availableQty<=0 ? true : false}
                   onClick={() =>
                     addToCart(
                       slug,
@@ -322,7 +337,7 @@ const Post = ({ buyNow, addToCart, product, variants }) => {
                       product.color
                     )
                   }
-                  className="flex ml-5 text-white bg-pink-500 border-0 py-2 px-6 focus:outline-none hover:bg-pink-600 rounded"
+                  className="disabled:bg-pink-300 flex ml-5 text-white bg-pink-600 border-0 py-2 px-6 focus:outline-none hover:bg-pink-600 rounded"
                 >
                   Add to cart
                 </button>
@@ -372,30 +387,36 @@ const Post = ({ buyNow, addToCart, product, variants }) => {
 };
 
 export async function getServerSideProps(context) {
+  let error;
   if (!mongoose.connections[0].readyState) {
     await mongoose.connect(process.env.mongoUri);
   }
 
   let products = await Product.findOne({ slug: context.query.slug });
-
-  let variants = await Product.find({ title: products.title ,category: products.category});
-
-  let colorSizeSlug = {}; // {red :{XL :{slug : 'wear the code'}}}
-
-  for (let item of variants) {
-    if (Object.keys(colorSizeSlug).includes(item.color)) {
-      colorSizeSlug[item.color][item.size] = { slug: item.slug };
-    } else {
-      colorSizeSlug[item.color] = {};
-      colorSizeSlug[item.color][item.size] = { slug: item.slug };
-    }
+  if(products == null){
+    return {
+      props: {
+        error:404
+      },
+    };
   }
-  return {
-    props: {
-      product: JSON.parse(JSON.stringify(products)),
-      variants: JSON.parse(JSON.stringify(colorSizeSlug)),
-    },
-  };
+    let variants = await Product.find({ title: products.title ,category: products.category});
+    let colorSizeSlug = {}; // {red :{XL :{slug : 'wear the code'}}}
+  
+    for (let item of variants) {
+      if (Object.keys(colorSizeSlug).includes(item.color)) {
+        colorSizeSlug[item.color][item.size] = { slug: item.slug };
+      } else {
+        colorSizeSlug[item.color] = {};
+        colorSizeSlug[item.color][item.size] = { slug: item.slug };
+      }
+    }
+    return {
+      props: {
+        product: JSON.parse(JSON.stringify(products)),
+        variants: JSON.parse(JSON.stringify(colorSizeSlug)),
+      },
+  }
 }
 
 export default Post;

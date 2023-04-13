@@ -19,10 +19,9 @@ export default function App({ Component, pageProps }) {
 
   const saveCart = (myCart) => {
     localStorage.setItem("cart", JSON.stringify(myCart));
-
     let subt = 0;
-    let keys = Object.keys(cart);
-    console.log(keys);
+    let keys = Object.keys(myCart);
+    // console.log(keys);
     for (let i = 0; i < keys.length; i++) {
       // subt += myCart[keys[i]]?.price *  myCart[keys[i]]?.qty
       subt += myCart[keys[i]] ? myCart[keys[i]].price * myCart[keys[i]].qty : 0;
@@ -68,7 +67,7 @@ export default function App({ Component, pageProps }) {
   const buyNow = (itemCode, qty, price, name, size, variant) => {
     saveCart({});
     let newCart={}
-    newCart[itemCode] ={ qty: 1, price, name, size, variant } ;
+    newCart[itemCode] = { qty: 1, price, name, size, variant } ;
     setCart(newCart);
     saveCart(newCart);
     setSubTotal(price);
@@ -102,9 +101,13 @@ export default function App({ Component, pageProps }) {
     try {
       if (localStorage.getItem("cart")) {
         setCart(JSON.parse(localStorage.getItem("cart")));
+        saveCart(JSON.parse(localStorage.getItem("cart")));
       }
       if (localStorage.getItem("price")) {
-        setSubTotal(JSON.parse(localStorage.getItem("price")));
+        setTimeout(()=>{
+          setSubTotal(JSON.parse(localStorage.getItem("price")));
+        },1000)
+        // setSubTotal(JSON.parse(localStorage.getItem("price")));
       }
       const myuser = JSON.parse(localStorage.getItem("myuser"));
       if (myuser) {
